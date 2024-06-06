@@ -8,6 +8,7 @@ app.use(express.static("public"));
 
 const server = app.listen(PORT, () => {
   console.log(`HTTP 服务器运行在 http://localhost:${PORT}`);
+  console.log(`WebSocket 服务器运行在 ws://localhost:${PORT}`);
 });
 
 const wss = new Server({ server });

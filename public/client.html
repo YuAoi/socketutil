@@ -1,0 +1,113 @@
+<!-- 192.168.30.200 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>WebSocket Client</title>
+    <link href="./index.css" rel="stylesheet" />
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        let socket = null;
+
+        const socketMsg = document.querySelector("#socketMsg");
+        const socketURLInput = document.querySelector(".socketURLInput");
+
+        const conButton = document.querySelector(".conButton");
+        const disConButton = document.querySelector(".disConButton");
+
+        const changeButtonStatus = function (status) {
+          conButton.disabled = status;
+          disConButton.disabled = !status;
+        };
+
+        // 建立链接
+        conButton.addEventListener("click", function (event) {
+          const val = socketURLInput.value;
+          const wsURL = val.includes("ws://") ? val : `ws://${val}:5001`;
+          // 连接 WebSocket 服务器
+          socket = new WebSocket(wsURL);
+
+          socket.onopen = function () {
+            console.log("Socket 连接成功");
+            changeButtonStatus(true);
+            socket.send(
+              JSON.stringify({
+                type: 3,
+                id: "hmi",
+                sn: "remove",
+              })
+            );
+          };
+
+          socket.onclose = function () {
+            changeButtonStatus(false);
+            console.log("Socket 连接关闭");
+          };
+
+          // 接收来自服务器的消息
+          socket.onmessage = function (event) {
+            socketMsg.innerHTML += `<div>${event.data}</div>`;
+          };
+        });
+        // 断开链接
+        disConButton.addEventListener("click", function () {
+          socket.close();
+        });
+
+        // 清理消息记录
+        document
+          .querySelector("#clearButton")
+          .addEventListener("click", function () {
+            socketMsg.innerHTML = "";
+          });
+        // 保存消息
+        document
+          .querySelector("#saveButton")
+          .addEventListener("click", function () {
+            downloadText(socketMsg.innerText, `socketMsg-${Date.now()}.txt`);
+          });
+      });
+
+      const downloadText = function (content, filename) {
+        const eleLink = document.createElement("a");
+        eleLink.download = filename;
+        eleLink.style.display = "none";
+        const blob = new Blob([content]);
+        eleLink.href = URL.createObjectURL(blob);
+        document.body.appendChild(eleLink);
+        eleLink.click();
+        document.body.removeChild(eleLink);
+      };
+    </script>
+  </head>
+  <body>
+    <div style="display: flex">
+      <div style="width: 400px" style="position: fixed; left: 0; top: 0">
+        <div style="margin-bottom: 15px">
+          <input
+            style="width: 100%; font-size: 14px; padding: 5px"
+            class="socketURLInput"
+            placeholder="输入ip/ws URL"
+          />
+        </div>
+        <div>
+          <button class="conButton">链接</button>
+          &nbsp;
+          <button class="disConButton" disabled>断开</button>
+        </div>
+      </div>
+      <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
+        <div>Socket Message:</div>
+        <div
+          id="socketMsg"
+          style="word-wrap: break-word; word-break: break-all"
+        ></div>
+        <div style="position: fixed; right: 0; top: 0">
+          <button id="clearButton">清除</button>
+          &nbsp;
+          <button id="saveButton">保存</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

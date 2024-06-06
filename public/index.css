@@ -1,0 +1,30 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+button {
+  padding: 5px 10px;
+  font-size: 14px;
+  background-color: #1456f0;
+  border: 1px solid #1456f0;
+  border-radius: 2px;
+  color: #fff;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: #336df4;
+  border-color: #336df4;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  background-color: #bbbfc4;
+  border-color: #bbbfc4;
+}
