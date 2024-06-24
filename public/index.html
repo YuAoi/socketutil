@@ -16,7 +16,10 @@
 
         // 接收来自服务器的消息
         socket.onmessage = function (event) {
-          socketMsg.innerHTML += `<div>${event.data}</div>`;
+          socketMsg.insertAdjacentHTML(
+            "beforeend",
+            `<div class="socket-msg__item">${event.data}</div>`
+          );
         };
 
         // 发送消息到服务器
@@ -60,8 +63,8 @@
             placeholder="输入消息"
           ></textarea>
         </div>
-        <div>
-          <button class="sendButton" data-message="messageInput1">提交</button>
+        <div style="text-align: right; margin-bottom: 10px">
+          <button class="sendButton" data-message="messageInput1">发送</button>
         </div>
         <div>
           <textarea
@@ -70,8 +73,8 @@
             placeholder="输入消息"
           ></textarea>
         </div>
-        <div>
-          <button class="sendButton" data-message="messageInput2">提交</button>
+        <div style="text-align: right; margin-bottom: 10px">
+          <button class="sendButton" data-message="messageInput2">发送</button>
         </div>
         <div>
           <textarea
@@ -80,14 +83,21 @@
             placeholder="输入消息"
           ></textarea>
         </div>
-        <div>
-          <button class="sendButton" data-message="messageInput3">提交</button>
+        <div style="text-align: right; margin-bottom: 10px">
+          <button class="sendButton" data-message="messageInput3">发送</button>
         </div>
       </div>
       <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
         <div>Socket Message:</div>
         <div id="socketMsg"></div>
-        <div><button id="clearButton">Clear</button></div>
+        <div>
+          <button
+            id="clearButton"
+            style="position: fixed; right: 5px; top: 5px"
+          >
+            Clear
+          </button>
+        </div>
       </div>
     </div>
   </body>

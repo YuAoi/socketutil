@@ -28,3 +28,15 @@ button:disabled {
   background-color: #bbbfc4;
   border-color: #bbbfc4;
 }
+
+#socketMsg {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+.socket-msg__item {
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+}
+.socket-msg__item:last-child {
+  border-bottom: none;
+}
