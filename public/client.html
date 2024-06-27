@@ -16,12 +16,14 @@
         const disConButton = document.querySelector(".disConButton");
         const clearButton = document.querySelector("#clearButton");
         const saveButton = document.querySelector("#saveButton");
+        const sendButton = document.querySelector(".sendButton");
 
         const changeButtonStatus = function (status) {
           conButton.disabled = status;
           disConButton.disabled = !status;
           clearButton.disabled = status;
           saveButton.disabled = status;
+          sendButton.disabled = !status;
         };
 
         // 建立链接
@@ -61,6 +63,18 @@
           socket.close();
         });
 
+        sendButton.addEventListener("click", function () {
+          const msg = document.querySelector(".messageInput").value;
+          // 判断 msg 是否是一个 JSON 字符串
+          try {
+            JSON.parse(msg);
+          } catch (error) {
+            alert("请输入正确的 JSON 字符串");
+            return;
+          }
+          socket.send(msg);
+        });
+
         // 清理消息记录
         clearButton.addEventListener("click", function () {
           socketMsg.innerHTML = "";
@@ -90,17 +104,29 @@
           <input
             style="width: 100%; font-size: 14px; padding: 5px"
             class="socketURLInput"
-            placeholder="输入ip/ws URL"
+            placeholder="输入 IP / WS URL"
           />
         </div>
         <div style="text-align: right">
           <button class="disConButton" disabled>断开</button>
           &nbsp;
-          <button class="conButton">链接</button>
+          <button class="conButton">链接（车/WS）</button>
+        </div>
+        <div style="margin-top: 15px">
+          <textarea
+            style="width: 100%; height: 200px"
+            class="messageInput"
+            placeholder="输入发送给车的消息"
+          ></textarea>
+        </div>
+        <div style="text-align: right; margin-bottom: 10px">
+          <button class="sendButton" data-message="messageInput" disabled>
+            发送
+          </button>
         </div>
       </div>
       <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
-        <div>Socket Message:</div>
+        <div>接收到的 Socket Message:</div>
         <div id="socketMsg"></div>
         <div style="position: fixed; right: 5px; top: 5px">
           <button id="clearButton">清除</button>
