@@ -32,6 +32,13 @@
             `.${target.dataset.message}`
           );
           const message = targetmessage.value;
+          // 判断 message 是否事一个 JSON 字符串
+          try {
+            JSON.parse(message);
+          } catch (error) {
+            alert("请输入正确的 JSON 字符串");
+            return;
+          }
           fetch("/send-message", {
             method: "POST",
             headers: {
