@@ -57,12 +57,73 @@
           .addEventListener("click", function () {
             socketMsg.innerHTML = "";
           });
+
+        const conButton = document.querySelector(".conButton");
+        const disConButton = document.querySelector(".disConButton");
+        const socketURLInput = document.querySelector(".socketURLInput");
+        const changeButtonStatus = function (status) {
+          conButton.disabled = status;
+          disConButton.disabled = !status;
+        };
+
+        // 桥接（车/WS）
+        conButton.addEventListener("click", function (event) {
+          const val = socketURLInput.value;
+          const wsURL = val.includes("ws://") ? val : `ws://${val}:5001`;
+          fetch(
+            `/bridge-ws?${new URLSearchParams({
+              wsURL: wsURL,
+            }).toString()}`,
+            {
+              method: "get",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          )
+            .then((response) => response.text())
+            .then((data) => {
+              changeButtonStatus(true);
+              console.log(data);
+            })
+            .catch((error) => console.error("Error:", error));
+        });
+        // 断开桥接
+        disConButton.addEventListener("click", function () {
+          fetch("/dis-bridge-ws", {
+            method: "get",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          })
+            .then((response) => response.text())
+            .then((data) => {
+              changeButtonStatus(false);
+              console.log(data);
+            })
+            .catch((error) => console.error("Error:", error));
+        });
       });
     </script>
   </head>
   <body>
     <div style="display: flex">
       <div style="width: 500px">
+        <div style="margin-bottom: 15px">
+          <input
+            style="width: 100%; font-size: 14px; padding: 5px"
+            class="socketURLInput"
+            placeholder="输入 IP / WS URL"
+          />
+        </div>
+        <div style="text-align: right; margin-bottom: 15px">
+          <small style="color: #999; margin-right: 10px">
+            将接入的 ws 消息转发给设备
+          </small>
+          <button class="disConButton" disabled>断开</button>
+          &nbsp;
+          <button class="conButton">桥接（车/WS）</button>
+        </div>
         <div>
           <textarea
             style="width: 100%; height: 200px"
