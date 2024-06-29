@@ -5,6 +5,19 @@
     <title>WebSocket Client</title>
     <link href="./index.css" rel="stylesheet" />
     <script>
+      // 发送 http 消息
+      const sendMessageSer = function (message) {
+        fetch("/send-message", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message: message }),
+        })
+          .then((response) => response.text())
+          .then((data) => console.log(data))
+          .catch((error) => console.error("Error:", error));
+      };
       document.addEventListener("DOMContentLoaded", () => {
         const socketMsg = document.querySelector("#socketMsg");
         // 连接 WebSocket 服务器
@@ -39,16 +52,7 @@
             alert("请输入正确的 JSON 字符串");
             return;
           }
-          fetch("/send-message", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ message: message }),
-          })
-            .then((response) => response.text())
-            .then((data) => console.log(data))
-            .catch((error) => console.error("Error:", error));
+          sendMessageSer(message);
         });
 
         // 清理消息记录
@@ -57,6 +61,48 @@
           .addEventListener("click", function () {
             socketMsg.innerHTML = "";
           });
+
+        // 桥接（车/WS）相关逻辑
+        const conButton = document.querySelector(".conButton");
+        const disConButton = document.querySelector(".disConButton");
+        const socketURLInput = document.querySelector(".socketURLInput");
+        const changeButtonStatus = function (status) {
+          conButton.disabled = status;
+          disConButton.disabled = !status;
+        };
+        let anotherSocket = null;
+
+        // 桥接（车/WS）
+        conButton.addEventListener("click", function (event) {
+          const val = socketURLInput.value;
+          const wsURL = val.includes("ws://") ? val : `ws://${val}:5001`;
+          anotherSocket = new WebSocket(wsURL);
+          anotherSocket.onopen = function () {
+            console.log("Socket 连接成功");
+            changeButtonStatus(true);
+            anotherSocket.send(
+              JSON.stringify({
+                type: 3,
+                id: "hmi",
+                sn: "remove",
+              })
+            );
+          };
+          anotherSocket.onclose = function () {
+            changeButtonStatus(false);
+            console.log("Socket 连接关闭");
+          };
+          anotherSocket.onmessage = function (event) {
+            sendMessageSer(event.data);
+          };
+        });
+        // 断开桥接
+        disConButton.addEventListener("click", function () {
+          // 当 ānotherSocket 存在并连接时，关闭它
+          if (anotherSocket && anotherSocket.readyState === 1) {
+            anotherSocket.close();
+          }
+        });
       });
     </script>
   </head>
@@ -95,6 +141,21 @@
         </div>
         <div style="text-align: right; margin-bottom: 10px">
           <button class="sendButton" data-message="messageInput3">发送</button>
+        </div>
+        <div style="margin-bottom: 15px">
+          <input
+            style="width: 100%; font-size: 14px; padding: 5px"
+            class="socketURLInput"
+            placeholder="输入 IP / WS URL"
+          />
+        </div>
+        <div style="text-align: right; margin-bottom: 15px">
+          <small style="color: #999; margin-right: 10px">
+            将接入的 ws 消息转发给设备
+          </small>
+          <button class="disConButton" disabled>断开</button>
+          &nbsp;
+          <button class="conButton">桥接（车/WS）</button>
         </div>
       </div>
       <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
