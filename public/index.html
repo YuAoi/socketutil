@@ -18,6 +18,7 @@
           .then((data) => console.log(data))
           .catch((error) => console.error("Error:", error));
       };
+
       document.addEventListener("DOMContentLoaded", () => {
         const socketMsg = document.querySelector("#socketMsg");
         // 连接 WebSocket 服务器
@@ -103,6 +104,60 @@
             anotherSocket.close();
           }
         });
+
+        const fileURLInput = document.querySelector(".fileURLInput");
+        const sendFileMessageButton = document.querySelector(
+          ".sendFileMessageButton"
+        );
+        const pauseSendFileMessageButton = document.querySelector(
+          ".pauseSendFileMessageButton"
+        );
+        const intervalInput = document.querySelector(".intervalInput");
+        let messages = [];
+        let index = 0;
+        let timer = null;
+        // 当 fileURLInput 的值发生变化时，读取文件内容
+        fileURLInput.addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          const reader = new FileReader();
+          reader.onload = function (event) {
+            if (timer) clearInterval(timer);
+            index = 0;
+            timer = null;
+
+            const content = event.target.result;
+            messages = content.split("\n");
+            sendFileMessageButton.disabled = false;
+          };
+          reader.readAsText(file);
+        });
+        // 发送文件消息
+        sendFileMessageButton.addEventListener("click", function () {
+          const intervalStr = intervalInput.value;
+          let interval = intervalStr ? parseInt(intervalStr) : 100;
+
+          sendFileMessageButton.disabled = true;
+          pauseSendFileMessageButton.disabled = false;
+          timer = setInterval(() => {
+            if (index >= messages.length) {
+              alert("发送完毕, 可点击重新发送");
+              sendFileMessageButton.disabled = false;
+              pauseSendFileMessageButton.disabled = true;
+              index = 0;
+              clearInterval(timer);
+              return;
+            }
+            const message = messages[index];
+            sendMessageSer(message);
+            index++;
+          }, interval);
+        });
+        // 暂停发送文件消息
+        pauseSendFileMessageButton.addEventListener("click", function () {
+          sendFileMessageButton.disabled = false;
+          pauseSendFileMessageButton.disabled = true;
+          clearInterval(timer);
+        });
       });
     </script>
   </head>
@@ -156,6 +211,31 @@
           <button class="disConButton" disabled>断开</button>
           &nbsp;
           <button class="conButton">桥接（车/WS）</button>
+        </div>
+
+        <div style="margin-bottom: 15px">
+          <input
+            type="file"
+            class="fileURLInput"
+            placeholder="选择已保存的文件"
+          />
+          <div>
+            <label for="intervalInput">间隔时间(毫秒）：</label>
+            <input
+              type="number"
+              class="intervalInput"
+              placeholder="间隔时间"
+              value="100"
+            />
+          </div>
+        </div>
+        <div style="text-align: right; margin-bottom: 15px">
+          <small style="color: #999; margin-right: 10px">
+            播放之前保存的消息（逐行发送）
+          </small>
+          <button class="sendFileMessageButton" disabled>发送</button>
+          &nbsp;
+          <button class="pauseSendFileMessageButton" disabled>暂停</button>
         </div>
       </div>
       <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
