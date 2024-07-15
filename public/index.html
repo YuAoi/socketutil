@@ -109,6 +109,9 @@
         const sendFileMessageButton = document.querySelector(
           ".sendFileMessageButton"
         );
+        const sendNextLineMessageButton = document.querySelector(
+          ".sendNextLineMessageButton"
+        );
         const pauseSendFileMessageButton = document.querySelector(
           ".pauseSendFileMessageButton"
         );
@@ -116,6 +119,7 @@
         let messages = [];
         let index = 0;
         let timer = null;
+
         // 当 fileURLInput 的值发生变化时，读取文件内容
         fileURLInput.addEventListener("change", function (event) {
           const file = event.target.files[0];
@@ -128,8 +132,22 @@
             const content = event.target.result;
             messages = content.split("\n");
             sendFileMessageButton.disabled = false;
+            sendNextLineMessageButton.disabled = false;
           };
           reader.readAsText(file);
+        });
+        sendNextLineMessageButton.addEventListener("click", function () {
+          if (index >= messages.length) {
+            alert("发送完毕, 可点击重新发送");
+            sendFileMessageButton.disabled = false;
+            sendNextLineMessageButton.disabled = false;
+            pauseSendFileMessageButton.disabled = true;
+            index = 0;
+            return;
+          }
+          const message = messages[index];
+          sendMessageSer(message);
+          index++;
         });
         // 发送文件消息
         sendFileMessageButton.addEventListener("click", function () {
@@ -137,6 +155,7 @@
           let interval = intervalStr ? parseInt(intervalStr) : 100;
 
           sendFileMessageButton.disabled = true;
+          sendNextLineMessageButton.disabled = true;
           pauseSendFileMessageButton.disabled = false;
           timer = setInterval(() => {
             if (index >= messages.length) {
@@ -155,6 +174,7 @@
         // 暂停发送文件消息
         pauseSendFileMessageButton.addEventListener("click", function () {
           sendFileMessageButton.disabled = false;
+          sendNextLineMessageButton.disabled = false;
           pauseSendFileMessageButton.disabled = true;
           clearInterval(timer);
         });
@@ -234,6 +254,8 @@
             播放之前保存的消息（逐行发送）
           </small>
           <button class="sendFileMessageButton" disabled>发送</button>
+          &nbsp;
+          <button class="sendNextLineMessageButton" disabled>下一帧</button>
           &nbsp;
           <button class="pauseSendFileMessageButton" disabled>暂停</button>
         </div>
