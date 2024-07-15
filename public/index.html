@@ -115,6 +115,9 @@
         const pauseSendFileMessageButton = document.querySelector(
           ".pauseSendFileMessageButton"
         );
+        const resetFileLineIndexButton = document.querySelector(
+          ".resetFileLineIndexButton"
+        );
         const intervalInput = document.querySelector(".intervalInput");
         let messages = [];
         let index = 0;
@@ -131,11 +134,17 @@
 
             const content = event.target.result;
             messages = content.split("\n");
+            resetFileLineIndexButton.disabled = false;
             sendFileMessageButton.disabled = false;
             sendNextLineMessageButton.disabled = false;
           };
           reader.readAsText(file);
         });
+        // 回到第一帧
+        resetFileLineIndexButton.addEventListener("click", function () {
+          index = 0;
+        });
+        // 发送下一帧消息
         sendNextLineMessageButton.addEventListener("click", function () {
           if (index >= messages.length) {
             alert("发送完毕, 可点击重新发送");
@@ -217,6 +226,7 @@
         <div style="text-align: right; margin-bottom: 10px">
           <button class="sendButton" data-message="messageInput3">发送</button>
         </div>
+
         <div style="margin-bottom: 15px">
           <input
             style="width: 100%; font-size: 14px; padding: 5px"
@@ -258,6 +268,10 @@
           <button class="sendNextLineMessageButton" disabled>下一帧</button>
           &nbsp;
           <button class="pauseSendFileMessageButton" disabled>暂停</button>
+          &nbsp;
+          <button class="resetFileLineIndexButton" disabled title="回到第一帧">
+            重置
+          </button>
         </div>
       </div>
       <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
