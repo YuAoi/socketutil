@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <title>WebSocket Client</title>
     <link href="./index.css" rel="stylesheet" />
+    <script src="./utils.js"></script>
     <script>
       // 发送 http 消息
       const sendMessageSer = function (message) {
@@ -61,6 +62,12 @@
           .querySelector("#clearButton")
           .addEventListener("click", function () {
             socketMsg.innerHTML = "";
+          });
+        // 保存消息记录
+        document
+          .querySelector("#saveButton")
+          .addEventListener("click", function () {
+            downloadText(socketMsg.innerText, `socketMsg-${Date.now()}.txt`);
           });
 
         // 桥接（车/WS）相关逻辑
@@ -277,13 +284,9 @@
       <div style="flex: 1; padding: 10px; border: 1px solid #ccc">
         <div>已发出的 Socket Message:</div>
         <div id="socketMsg"></div>
-        <div>
-          <button
-            id="clearButton"
-            style="position: fixed; right: 5px; top: 5px"
-          >
-            Clear
-          </button>
+        <div style="position: fixed; right: 5px; top: 5px">
+          <button id="saveButton">保存</button>
+          <button id="clearButton">清除</button>
         </div>
       </div>
     </div>

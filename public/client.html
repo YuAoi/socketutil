@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <title>WebSocket Client</title>
     <link href="./index.css" rel="stylesheet" />
+    <script src="./utils.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         let socket = null;
@@ -84,17 +85,6 @@
           downloadText(socketMsg.innerText, `socketMsg-${Date.now()}.txt`);
         });
       });
-
-      const downloadText = function (content, filename) {
-        const eleLink = document.createElement("a");
-        eleLink.download = filename;
-        eleLink.style.display = "none";
-        const blob = new Blob([content]);
-        eleLink.href = URL.createObjectURL(blob);
-        document.body.appendChild(eleLink);
-        eleLink.click();
-        document.body.removeChild(eleLink);
-      };
     </script>
   </head>
   <body>
