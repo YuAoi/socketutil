@@ -168,7 +168,7 @@
         // 发送文件消息
         sendFileMessageButton.addEventListener("click", function () {
           const intervalStr = intervalInput.value;
-          let interval = intervalStr ? parseInt(intervalStr) : 100;
+          let interval = intervalStr ? parseInt(intervalStr) : 50;
 
           sendFileMessageButton.disabled = true;
           sendNextLineMessageButton.disabled = true;
@@ -262,7 +262,7 @@
               type="number"
               class="intervalInput"
               placeholder="间隔时间"
-              value="100"
+              value="50"
             />
           </div>
         </div>
