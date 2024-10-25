@@ -2,7 +2,7 @@ const express = require("express");
 const { Server, WebSocket } = require("ws");
 
 const app = express();
-const PORT = 8000;
+const PORT = 5001;
 
 app.use(express.static("public"));
 
