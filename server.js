@@ -19,6 +19,10 @@ wss.on("connection", (ws) => {
   ws.on("message", (message) => {
     console.log(`收到消息: ${message}`);
   });
+  // 监听客户端断开连接事件
+  ws.on("close", () => {
+    console.log("客户端已断开连接");
+  });
 });
 
 app.use((req, res, next) => {
