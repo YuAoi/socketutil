@@ -1,5 +1,6 @@
 const express = require("express");
 const { Server, WebSocket } = require("ws");
+const { getLocalIPAddress } = require("./utils");
 
 const app = express();
 const PORT = 5001;
@@ -7,8 +8,13 @@ const PORT = 5001;
 app.use(express.static("public"));
 
 const server = app.listen(PORT, () => {
-  console.log(`HTTP 服务器运行在 http://localhost:${PORT}`);
-  console.log(`WebSocket 服务器运行在 ws://localhost:${PORT}`);
+  const ip = getLocalIPAddress();
+  console.log(
+    `HTTP 服务器运行在 http://localhost:${PORT} | http://${ip}:${PORT}`
+  );
+  console.log(
+    `WebSocket 服务器运行在 ws://localhost:${PORT} | ws://${ip}:${PORT}`
+  );
 });
 
 const wss = new Server({ server });
