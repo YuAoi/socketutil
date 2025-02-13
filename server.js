@@ -5,6 +5,9 @@ const { getLocalIPAddress } = require("./utils");
 const app = express();
 const PORT = 5001;
 
+// 增加请求体大小限制
+app.use(express.json({ limit: "200mb" }));
+
 app.use(express.static("public"));
 
 const server = app.listen(PORT, () => {
